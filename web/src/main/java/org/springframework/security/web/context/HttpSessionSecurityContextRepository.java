@@ -143,13 +143,7 @@ public class HttpSessionSecurityContextRepository implements SecurityContextRepo
 							+ response
 							+ ". You must use the HttpRequestResponseHolder.response after invoking loadContext");
 		}
-		// saveContext() might already be called by the response wrapper
-		// if something in the chain called sendError() or sendRedirect(). This ensures we
-		// only call it
-		// once per request.
-		if (!responseWrapper.isContextSaved()) {
-			responseWrapper.saveContext(context);
-		}
+		responseWrapper.saveContext(context);
 	}
 
 	public boolean containsContext(HttpServletRequest request) {
@@ -306,6 +300,7 @@ public class HttpSessionSecurityContextRepository implements SecurityContextRepo
 		private final boolean httpSessionExistedAtStartOfRequest;
 		private final SecurityContext contextBeforeExecution;
 		private final Authentication authBeforeExecution;
+		private boolean isSaveContextInvoked;
 
 		/**
 		 * Takes the parameters required to call <code>saveContext()</code> successfully
@@ -356,6 +351,7 @@ public class HttpSessionSecurityContextRepository implements SecurityContextRepo
 					// SEC-1587 A non-anonymous context may still be in the session
 					// SEC-1735 remove if the contextBeforeExecution was not anonymous
 					httpSession.removeAttribute(springSecurityContextKey);
+					this.isSaveContextInvoked = true;
 				}
 				return;
 			}
@@ -372,6 +368,7 @@ public class HttpSessionSecurityContextRepository implements SecurityContextRepo
 				if (contextChanged(context)
 						|| httpSession.getAttribute(springSecurityContextKey) == null) {
 					httpSession.setAttribute(springSecurityContextKey, context);
+					this.isSaveContextInvoked = true;
 
 					if (logger.isDebugEnabled()) {
 						logger.debug("SecurityContext '" + context
@@ -382,7 +379,7 @@ public class HttpSessionSecurityContextRepository implements SecurityContextRepo
 		}
 
 		private boolean contextChanged(SecurityContext context) {
-			return context != contextBeforeExecution
+			return this.isSaveContextInvoked || context != contextBeforeExecution
 					|| context.getAuthentication() != authBeforeExecution;
 		}
 
