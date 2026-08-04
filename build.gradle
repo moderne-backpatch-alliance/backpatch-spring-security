@@ -75,7 +75,7 @@ ext.sampleProjects = subprojects.findAll { project -> project.name.startsWith('s
 ext.sampleBootProjects = subprojects.findAll { project -> project.name.startsWith('spring-security-samples-boot') }
 ext.itestProjects = subprojects.findAll { project -> project.name.startsWith('itest') }
 ext.coreModuleProjects = javaProjects - sampleProjects - itestProjects
-ext.aspectjProjects = [project(':spring-security-aspects'), project(':spring-security-samples-xml-aspectj'), project(':spring-security-samples-javaconfig-aspectj')]
+ext.aspectjProjects = []
 
 configure(allprojects - javaProjects) {
 	task afterEclipseImport {
@@ -96,11 +96,7 @@ configure(allprojects - javaProjects) {
 	}
 }
 
-configure(subprojects - coreModuleProjects - project(':spring-security-samples-javaconfig-messages') - project(':spring-security-bom')) {
-	sonarqube {
-		skipProject = true
-	}
-}
+
 
 configure(javaProjects) {
 	ext.TOMCAT_GRADLE = "$rootDir/gradle/tomcat.gradle"
@@ -167,49 +163,9 @@ task coreInstall {
 	dependsOn coreModuleProjects*.tasks*.matching { task -> task.name == 'install' }
 }
 
-// Task for creating the distro zip
 
-task dist(type: Zip) {
-	dependsOn { subprojects*.tasks*.matching { task -> task.name.endsWith('generatePom') } }
-	classifier = 'dist'
 
-	evaluationDependsOn(':docs')
-	evaluationDependsOn(':docs:manual')
 
-	def zipRootDir = "${project.name}-$version"
-	into(zipRootDir) {
-		from(rootDir) {
-			include '*.adoc'
-			include '*.txt'
-		}
-		into('docs') {
-			with(project(':docs').apiSpec)
-			with(project(':docs:manual').spec)
-			with(project(':docs:guides').spec)
-		}
-		project.coreModuleProjects*.tasks*.withType(AbstractArchiveTask).flatten().each{ archiveTask ->
-			if(archiveTask!=dist){
-				into("$zipRootDir/dist") {
-					from archiveTask.outputs.files
-				}
-			}
-		}
-		sampleProjects.each { project->
-			into("$zipRootDir/samples/$project.name") {
-				from(project.projectDir) {
-					include "src/main/**"
-					include "pom.xml"
-				}
-			}
-		}
-	}
-}
-
-artifacts {
-	archives dist
-	archives project(':docs').docsZip
-	archives project(':docs').schemaZip
-}
 
 
 if (project.hasProperty('artifactoryUsername')) {

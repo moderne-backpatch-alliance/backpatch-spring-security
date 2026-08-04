@@ -7,19 +7,8 @@ rootProject.children.each {project ->
 
 def String[] modules = [
 	'core',
-	'data',
-	'remoting',
-	'web',
-	'ldap',
-	'acl',
-	'config',
-	'cas',
-	'openid',
-	'taglibs',
-	'aspects',
 	'crypto',
-	'messaging',
-	'test'
+	'web'
 ]
 
 include modules
@@ -30,51 +19,3 @@ modules.each {name ->
 	p.buildFileName = "${name}.gradle"
 }
 
-def String[] itest = [
-	'web',
-	'context'
-]
-
-include itest
-
-itest.each { name ->
-	def p = findProject(":${name}")
-	p.name = "itest-${name}"
-	p.buildFileName = "itest-${name}.gradle"
-	p.projectDir = new File(settingsDir, "itest/${name}");
-}
-
-include 'docs', 'docs:manual', 'docs:guides'
-
-def docs = findProject(':docs')
-docs.buildFileName = 'docs.gradle'
-
-include 'bom'
-
-findProject(':bom').name = 'spring-security-bom'
-
-includeSamples("samples" + File.separator + "xml")
-includeSamples("samples" + File.separator + "javaconfig")
-includeSamples("samples" + File.separator + "boot")
-
-void includeSamples(String samplesDir) {
-	FileTree tree = fileTree(samplesDir) {
-		include '**' + File.separator + '*.gradle'
-	}
-	tree.each {File file ->
-		String projectDir = file.path.substring(file.path.indexOf(samplesDir), file.path.lastIndexOf(File.separator))
-		String projectPath = projectDir.substring(projectDir.lastIndexOf(File.separator) + 1)
-		String projectNamePrefix = samplesDir.substring(samplesDir.lastIndexOf(File.separator) + 1).toLowerCase();
-
-		include projectPath
-
-		def project = findProject(":${projectPath}")
-
-		project.name = "spring-security-samples-${projectNamePrefix}-${project.name}"
-		project.projectDir = new File(settingsDir, projectDir)
-
-		if (!project.buildFile.exists()) {
-			project.buildFileName = file.path.substring(file.path.lastIndexOf(File.separator) + 1)
-		}
-	}
-}
