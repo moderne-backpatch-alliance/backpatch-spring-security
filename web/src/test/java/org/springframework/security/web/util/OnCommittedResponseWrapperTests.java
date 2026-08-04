@@ -1112,6 +1112,36 @@ public class OnCommittedResponseWrapperTests {
 	}
 
 	@Test
+	public void addIntHeaderContentLengthPrintWriterWriteStringCommits() throws Exception {
+		int expected = 1234;
+		response.addIntHeader("Content-Length", String.valueOf(expected).length());
+
+		response.getWriter().write(expected);
+
+		assertThat(committed).isTrue();
+	}
+
+	@Test
+	public void setHeaderContentLengthPrintWriterWriteStringCommits() throws Exception {
+		int expected = 1234;
+		response.setHeader("Content-Length", String.valueOf(String.valueOf(expected).length()));
+
+		response.getWriter().write(expected);
+
+		assertThat(committed).isTrue();
+	}
+
+	@Test
+	public void setIntHeaderContentLengthPrintWriterWriteStringCommits() throws Exception {
+		int expected = 1234;
+		response.setIntHeader("Content-Length", String.valueOf(expected).length());
+
+		response.getWriter().write(expected);
+
+		assertThat(committed).isTrue();
+	}
+
+	@Test
 	public void bufferSizePrintWriterWriteCommits() throws Exception {
 		String expected = "1234567890";
 		when(response.getBufferSize()).thenReturn(expected.length());
