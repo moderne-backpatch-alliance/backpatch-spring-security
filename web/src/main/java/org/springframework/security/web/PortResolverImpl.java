@@ -16,6 +16,8 @@
 
 package org.springframework.security.web;
 
+import java.util.Locale;
+
 import org.springframework.util.Assert;
 
 import javax.servlet.ServletRequest;
@@ -51,7 +53,7 @@ public class PortResolverImpl implements PortResolver {
 		int serverPort = request.getServerPort();
 		Integer portLookup = null;
 
-		String scheme = request.getScheme().toLowerCase();
+		String scheme = request.getScheme().toLowerCase(Locale.ENGLISH);
 
 		if ("http".equals(scheme)) {
 			portLookup = portMapper.lookupHttpPort(Integer.valueOf(serverPort));

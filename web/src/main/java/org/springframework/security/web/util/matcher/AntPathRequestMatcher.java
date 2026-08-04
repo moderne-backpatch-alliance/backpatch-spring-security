@@ -16,6 +16,7 @@
 package org.springframework.security.web.util.matcher;
 
 import java.util.Collections;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -303,7 +304,7 @@ public final class AntPathRequestMatcher
 
 		private SubpathMatcher(String subpath, boolean caseSensitive) {
 			assert!subpath.contains("*");
-			this.subpath = caseSensitive ? subpath : subpath.toLowerCase();
+			this.subpath = caseSensitive ? subpath : subpath.toLowerCase(Locale.ROOT);
 			this.length = subpath.length();
 			this.caseSensitive = caseSensitive;
 		}
@@ -311,7 +312,7 @@ public final class AntPathRequestMatcher
 		@Override
 		public boolean matches(String path) {
 			if (!this.caseSensitive) {
-				path = path.toLowerCase();
+				path = path.toLowerCase(Locale.ROOT);
 			}
 			return path.startsWith(this.subpath)
 					&& (path.length() == this.length || path.charAt(this.length) == '/');
