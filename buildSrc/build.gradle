@@ -1,6 +1,7 @@
 apply plugin: "java-gradle-plugin"
 
 repositories {
+	gradlePluginPortal()
 	mavenCentral()
 }
 
@@ -16,6 +17,25 @@ gradlePlugin {
 dependencies {
 	compile 'com.thaiopensource:trang:20091111'
 	compile 'net.sourceforge.saxon:saxon:9.1.0.8'
+
+	// spring-build-conventions 0.0.23.2.RELEASE, vendored into buildSrc above: its own
+	// compile dependencies. Six are the versions that tag declares; build-info-extractor-gradle
+	// moves because its transitive is gone, and propdeps, spring-io, docbook and gretty are
+	// absent for the reasons in the patch message.
+	compile 'com.github.ben-manes:gradle-versions-plugin:0.17.0'
+	compile 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.11.0'
+	compile 'io.spring.gradle:dependency-management-plugin:1.0.6.RELEASE'
+	compile 'org.asciidoctor:asciidoctor-gradle-plugin:1.5.8.1'
+	compile 'org.hidetake:gradle-ssh-plugin:2.9.0'
+	compile 'org.jfrog.buildinfo:build-info-extractor-gradle:4.29.0'
+	compile 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.6.2'
+	compile localGroovy()
+}
+
+configurations {
+	compile {
+		exclude module: 'groovy-all'
+	}
 }
 
 task ide(type: Copy)  {

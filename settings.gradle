@@ -5,6 +5,25 @@ FileTree buildFiles = fileTree(rootDir) {
 	include '**/*.gradle'
 	exclude 'build', '**/gradle', 'settings.gradle', 'buildSrc', '/build.gradle', '.*', 'out'
 	exclude '**/grails3'
+	exclude '**/spring-security-samples-*.gradle'
+	// The reference manual is not built by this fork. io.spring.convention.docs applies the
+	// `docbook-reference` plugin id, and io.spring.gradle:docbook-reference-plugin:0.3.1 is
+	// 404 on Central and on the Gradle Plugin Portal and served only by repo.spring.io, which
+	// answers 401 -- so the docs project cannot be evaluated at all, and an unevaluated
+	// project stops configuration for the whole build. It publishes no artifact this
+	// candidate ships; the five jars come from core, web, oauth2-core, oauth2-jose and
+	// oauth2-client. Excluded here rather than in the module's own build file because that
+	// file goes on to configure `asciidoctor { }`, which the convention is what provides.
+	exclude '**/spring-security-docs-manual.gradle'
+	// The samples are not built by this fork either, for the same class of reason. They are
+	// war projects driven by io.spring.convention.spring-sample-war, which applies the
+	// `org.gretty` plugin id; gretty 2.2.0 (what 0.0.23.2 pins) needs org.gretty:gretty-core
+	// :2.2.0, a jcenter-only artifact that exists on no public repository, and the only gretty
+	// still published is 3.x, which removed the `tomcat8` container every sample here asks
+	// for. Excluding them lets the vendored buildSrc drop the gretty dependency altogether
+	// rather than pin a version that cannot run these projects. No sample publishes an
+	// artifact, and nothing this candidate ships depends on one -- the dependency runs the
+	// other way.
 	if(excludes) {
 		exclude excludes
 	}
