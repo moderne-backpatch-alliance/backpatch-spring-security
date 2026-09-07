@@ -1,6 +1,7 @@
 apply plugin: "java-gradle-plugin"
 
 repositories {
+	gradlePluginPortal()
 	mavenCentral()
 }
 
@@ -20,6 +21,26 @@ gradlePlugin {
 dependencies {
 	compile 'com.thaiopensource:trang:20091111'
 	compile 'net.sourceforge.saxon:saxon:9.1.0.8'
+
+	// spring-build-conventions 0.0.38, vendored into buildSrc above: its own
+	// compile dependencies, as its build.gradle declares them at that tag.
+	compile 'com.github.ben-manes:gradle-versions-plugin:0.25.0'
+	compile 'org.gretty:gretty:3.0.9'
+	compile 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.21.1'
+	compile 'io.spring.gradle:dependency-management-plugin:1.0.9.RELEASE'
+	compile 'io.spring.javaformat:spring-javaformat-gradle-plugin:0.0.25'
+	compile 'io.spring.nohttp:nohttp-gradle:0.0.5.RELEASE'
+	compile 'org.asciidoctor:asciidoctor-gradle-jvm:3.3.2'
+	compile 'org.asciidoctor:asciidoctor-gradle-jvm-pdf:3.3.2'
+	compile 'org.hidetake:gradle-ssh-plugin:2.10.1'
+	compile 'org.jfrog.buildinfo:build-info-extractor-gradle:4.29.0'
+	compile 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.7.1'
+}
+
+configurations {
+	compile {
+		exclude module: 'groovy-all'
+	}
 }
 
 task ide(type: Copy)  {
