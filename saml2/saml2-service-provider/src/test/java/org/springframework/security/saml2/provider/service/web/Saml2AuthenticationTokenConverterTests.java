@@ -124,6 +124,24 @@ public class Saml2AuthenticationTokenConverterTests {
 	}
 
 	@Test
+	public void convertWhenGetRequestOversizedDeflatedThenSaml2AuthenticationException() {
+		Saml2AuthenticationTokenConverter converter = new Saml2AuthenticationTokenConverter(
+				this.relyingPartyRegistrationResolver);
+		given(this.relyingPartyRegistrationResolver.convert(any(HttpServletRequest.class)))
+				.willReturn(this.relyingPartyRegistration);
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.setMethod("GET");
+		byte[] b = new byte[1024 * 1024 + 1];
+		for (int i = 0; i < b.length; i++) {
+			b[i] = 56;
+		}
+		byte[] deflated = Saml2Utils.samlDeflate(new String(b, StandardCharsets.UTF_8));
+		request.setParameter(Saml2ParameterNames.SAML_RESPONSE, Saml2Utils.samlEncode(deflated));
+		assertThatExceptionOfType(Saml2AuthenticationException.class).isThrownBy(() -> converter.convert(request))
+				.withStackTraceContaining("SAML payload exceeded maximum size");
+	}
+
+	@Test
 	public void convertWhenGetRequestInvalidDeflatedThenSaml2AuthenticationException() {
 		Saml2AuthenticationTokenConverter converter = new Saml2AuthenticationTokenConverter(
 				this.relyingPartyRegistrationResolver);
