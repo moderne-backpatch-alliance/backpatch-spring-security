@@ -17,6 +17,7 @@
 package org.springframework.security.web.server.savedrequest;
 
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Base64;
 import java.util.Collections;
@@ -83,9 +84,16 @@ public class CookieServerRequestCache implements ServerRequestCache {
 	@Override
 	public Mono<URI> getRedirectUri(ServerWebExchange exchange) {
 		MultiValueMap<String, HttpCookie> cookieMap = exchange.getRequest().getCookies();
-		return Mono.justOrEmpty(cookieMap.getFirst(REDIRECT_URI_COOKIE_NAME)).map(HttpCookie::getValue)
-				.map(CookieServerRequestCache::decodeCookie)
-				.onErrorResume(IllegalArgumentException.class, (ex) -> Mono.empty()).map(URI::create);
+		return Mono.justOrEmpty(cookieMap.getFirst(REDIRECT_URI_COOKIE_NAME))
+			.map(HttpCookie::getValue)
+			.map(CookieServerRequestCache::decodeCookie)
+			.flatMap((decoded) -> isRelativePath(decoded) ? Mono.just(decoded) : Mono.empty())
+			.map(URI::create)
+			.onErrorResume(IllegalArgumentException.class, (ex) -> Mono.empty());
+	}
+
+	private boolean isRelativePath(String uri) {
+		return uri.startsWith("/") && !uri.startsWith("//");
 	}
 
 	@Override
@@ -113,11 +121,13 @@ public class CookieServerRequestCache implements ServerRequestCache {
 	}
 
 	private static String encodeCookie(String cookieValue) {
-		return new String(Base64.getEncoder().encode(cookieValue.getBytes()));
+		return new String(Base64.getEncoder().encode(cookieValue.getBytes(StandardCharsets.UTF_8)),
+				StandardCharsets.UTF_8);
 	}
 
 	private static String decodeCookie(String encodedCookieValue) {
-		return new String(Base64.getDecoder().decode(encodedCookieValue.getBytes()));
+		return new String(Base64.getDecoder().decode(encodedCookieValue.getBytes(StandardCharsets.UTF_8)),
+				StandardCharsets.UTF_8);
 	}
 
 	private static ServerWebExchangeMatcher createDefaultRequestMatcher() {
