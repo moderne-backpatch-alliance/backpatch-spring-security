@@ -219,4 +219,81 @@ public final class X509TestUtils {
 		return (X509Certificate) cf.generateCertificate(in);
 	}
 
+	/**
+	 * Builds an X.509 certificate whose OU value is the literal string
+	 * {@code EMAILADDRESS=evil@attacker.test,} while the real e-mail attribute is
+	 * {@code real@example.com}. The subject DN is:
+	 *
+	 * <pre>
+	 *  EMAILADDRESS=real@example.com, OU=EMAILADDRESS=evil@attacker.test,, O=Example Corp, C=US
+	 * </pre>
+	 *
+	 * CVE-2026-47838 is not specific to CN: an expression naming any other attribute was
+	 * fooled the same way.
+	 */
+	public static X509Certificate buildTestCertificateWithEmailEmbeddedInOu() throws Exception {
+		String cert = "-----BEGIN CERTIFICATE-----\n"
+				+ "MIIDwTCCAqmgAwIBAgIUCJFr0Vo2iN+Ve3LKVhdCe+oC1pcwDQYJKoZIhvcNAQEL\n"
+				+ "BQAwcDEfMB0GCSqGSIb3DQEJARYQcmVhbEBleGFtcGxlLmNvbTEpMCcGA1UECwwg\n"
+				+ "RU1BSUxBRERSRVNTPWV2aWxAYXR0YWNrZXIudGVzdCwxFTATBgNVBAoMDEV4YW1w\n"
+				+ "bGUgQ29ycDELMAkGA1UEBhMCVVMwHhcNMjYwOTExMDYwMjExWhcNMzYwOTA4MDYw\n"
+				+ "MjExWjBwMR8wHQYJKoZIhvcNAQkBFhByZWFsQGV4YW1wbGUuY29tMSkwJwYDVQQL\n"
+				+ "DCBFTUFJTEFERFJFU1M9ZXZpbEBhdHRhY2tlci50ZXN0LDEVMBMGA1UECgwMRXhh\n"
+				+ "bXBsZSBDb3JwMQswCQYDVQQGEwJVUzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCC\n"
+				+ "AQoCggEBAPCrhDQ0UIpdwyNARb3+jcWceuxQmZvTqGLAeiT30zlanJHrIiJgmqIg\n"
+				+ "lueFEBlT+sJKudMwYHDeubydQ7N0/jLJqlVhXqBFJG3nvl85DK5iuKNqSs4FAquk\n"
+				+ "DCWkQd1cW1ssDr6pt++ghqq5FZSiY3J3WWZDgDqzrWI/Yi7ntTxwVgqR7gck0EwH\n"
+				+ "WRd81JER0SZ8MUXWZsrrA6ZX7EZMyKv5zzgCU7eRddG2c2IeLRC6acq5gGyE7NJI\n"
+				+ "vAk+IlYsMwFjS2rx+eJvsjH4xJsBGeEjW1AjFP0ufM6xKyyikt932gpkTQ5iJMW1\n"
+				+ "Y7X3r8+YPsreW5K9CnaUqpKE3d+bGSUCAwEAAaNTMFEwHQYDVR0OBBYEFHNsChE7\n"
+				+ "67Xul2wcNIO3cKGqdcu9MB8GA1UdIwQYMBaAFHNsChE767Xul2wcNIO3cKGqdcu9\n"
+				+ "MA8GA1UdEwEB/wQFMAMBAf8wDQYJKoZIhvcNAQELBQADggEBANPfhqhbZ1ivpdRw\n"
+				+ "zfxxXK4Xly/vOEhyvxjUd4s+4kD09mQ4NMi8r+CO45rO+DK1XnEhiHBE2o7p7sjG\n"
+				+ "YHVsYJcs+LioZe5bon82ecuFvDvQZ9kdVxhAq+eVUKF1VtY7aEaF36KIHpBK2IVz\n"
+				+ "uueWzrxNOltdD8jeTdv77QBkvaeIG+p6/9OqzPIHtEugmHiThIocOyd6ZsVfkwdK\n"
+				+ "9P0k/iEcLmjMIktTa0Q5cRb/jn5WsWBUy/JwTvKEH2U0jYA487TDlgaPPBvkEarj\n"
+				+ "HLBj6D1sZ/8U88a7fq+HkG7+nGpmhNw7D5zRI4dLbg7PybpcOyxjH7k40gop8bpi\n"
+				+ "VDwK2EU=\n"
+				+ "-----END CERTIFICATE-----";
+		ByteArrayInputStream in = new ByteArrayInputStream(cert.getBytes());
+		CertificateFactory cf = CertificateFactory.getInstance("X.509");
+		return (X509Certificate) cf.generateCertificate(in);
+	}
+
+	/**
+	 * Builds an X.509 certificate whose CN value itself contains a comma. The subject DN
+	 * is:
+	 *
+	 * <pre>
+	 *  CN=Taylor, Luke, O=Example Corp, C=US
+	 * </pre>
+	 *
+	 * {@link java.security.cert.X509Certificate#getSubjectDN()} rendered that value
+	 * quoted, so the extracted principal carried the opening quote.
+	 */
+	public static X509Certificate buildTestCertificateWithCommaInCn() throws Exception {
+		String cert = "-----BEGIN CERTIFICATE-----\n"
+				+ "MIIDVzCCAj+gAwIBAgIUcp7bEaRwrtZpguzyF7G5TJnO1xIwDQYJKoZIhvcNAQEL\n"
+				+ "BQAwOzEVMBMGA1UEAwwMVGF5bG9yLCBMdWtlMRUwEwYDVQQKDAxFeGFtcGxlIENv\n"
+				+ "cnAxCzAJBgNVBAYTAlVTMB4XDTI2MDkxMTA2NTUyOFoXDTM2MDkwODA2NTUyOFow\n"
+				+ "OzEVMBMGA1UEAwwMVGF5bG9yLCBMdWtlMRUwEwYDVQQKDAxFeGFtcGxlIENvcnAx\n"
+				+ "CzAJBgNVBAYTAlVTMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAk/JZ\n"
+				+ "j20HsCthcusUA8ZDRl+0WOuRFvDWKNMnGixBw3BbG7Z7nyj6UQJq/ry5QjyypXvr\n"
+				+ "qJDL+BCMbjkCXrGnpXvOBHB3hlhM+xY6s1idVWZs5sGwhSfQhX45W7sfGrt3LNNN\n"
+				+ "KC8/hXwajdr4UWbZjDiVqbmodN88Tay5nTvtUhqRWGaL8SQNZx59a6wrsMzoC9g0\n"
+				+ "fJiYKzTCp4dz/3YpzEa9T69/jLe2FJda00yuRnImtL4ta2f3A89hUKXFjSVBLVMi\n"
+				+ "9SYDjBQQRzMKDCP0qqAeI07zUxoNtjPIU/gvyM1CPtBgqaqdxt2/H6Yo8XHt8ylR\n"
+				+ "jEfigEuxkY8uc2546wIDAQABo1MwUTAdBgNVHQ4EFgQUaFplAtheF+VeoKkpxTr2\n"
+				+ "gfyTxzkwHwYDVR0jBBgwFoAUaFplAtheF+VeoKkpxTr2gfyTxzkwDwYDVR0TAQH/\n"
+				+ "BAUwAwEB/zANBgkqhkiG9w0BAQsFAAOCAQEAT0kG8ZbeJDZ5fhOYABTUdOsZcaVy\n"
+				+ "h+2MHTridLEWTj3gP8+7v//BZToU+RzWvwoRxdKQ6z+kVXffcKEmlFO5IrxYsNWl\n"
+				+ "DCcsPw7jcW1xfXVMtCevno6ZCUnzRkNEK96xv6ljrQyz7ZT/bSR15f5MpHbWfdlx\n"
+				+ "mQb9hxtElsnzPHKrtXWM06VgnApOuFN2caPibGacS51GELuEL6pbtdammEpOR91J\n"
+				+ "PdmnD0l41uM5Ci7z5sbAIOimkFLokCCXirSrzywhTrrBoFUCDVgeufViqgtr0sBb\n"
+				+ "Z5O46ig3GJDoCiQkLTcE4/s/m8RNyhTJLg328LEHNCadhPB27/M+8/6JhA==\n"
+				+ "-----END CERTIFICATE-----";
+		ByteArrayInputStream in = new ByteArrayInputStream(cert.getBytes());
+		CertificateFactory cf = CertificateFactory.getInstance("X.509");
+		return (X509Certificate) cf.generateCertificate(in);
+	}
 }
