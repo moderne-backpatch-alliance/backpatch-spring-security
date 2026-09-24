@@ -1,6 +1,6 @@
 schema: osera-patch-evidence/0.1.0
 producer: moderne
-release: 5.7.14.1-backpatch-00004
+release: 5.7.14.1-backpatch-00005
 baseline: v5.7.14+backpatch.baseline
 fixes:
   - cve: CVE-2026-22732
@@ -22,11 +22,16 @@ fixes:
     upstream: https://nvd.nist.gov/vuln/detail/CVE-2025-22228
     artifacts:
       - org.springframework.security:spring-security-crypto
-    note: New in this release; ported onto 5.7.14; fixed at 5.7.14.1-backpatch-00004 (backpatch-spring-security@fa4fb35).
+    note: Carried from 5.7.14.1-backpatch-00004; ported onto 5.7.14; fixed at 5.7.14.1-backpatch-00004 (backpatch-spring-security@fa4fb35).
+  - cve: CVE-2026-41706
+    upstream: https://nvd.nist.gov/vuln/detail/CVE-2026-41706
+    artifacts:
+      - org.springframework.security:spring-security-web
+    note: New in this release; ported onto 5.7.14; fixed at 5.7.14.1-backpatch-00005 (backpatch-spring-security@50b528d..6c4475e).
 tests:
-  commit: fa4fb35755c2b35fc947779999be3a3a7614e92c
-  command: ./gradlew --quiet --no-daemon -I init-backpatch.gradle -Dbackpatch.version=5.7.14.1-backpatch-00004 -Dbackpatch.repository.url=file:///tmp/osera-unused-repo -Dbackpatch.compile.jdk=11 -p crypto test --rerun-tasks --tests org.springframework.security.crypto.bcrypt.BCryptPasswordEncoderTests
+  commit: 6c4475e33c93db93cde1418e40b578dbca0c63bb
+  command: ./gradlew --quiet --no-daemon -I init-backpatch.gradle -Dbackpatch.version=5.7.14.1-backpatch-00005 -Dbackpatch.repository.url=file:///tmp/osera-unused-repo -Dbackpatch.compile.jdk=11 -p web test --rerun-tasks --tests org.springframework.security.web.savedrequest.CookieRequestCacheTests --tests org.springframework.security.web.savedrequest.RequestCacheAwareFilterTests --tests org.springframework.security.web.server.savedrequest.CookieServerRequestCacheTests
   runtime: OpenJDK 11.0.23 (Temurin), Gradle wrapper of the repository
-  report: spring-security-crypto-5.7.14.1-backpatch-00004-tests.zip
+  report: spring-security-web-5.7.14.1-backpatch-00005-tests.zip
   result: pass
   note: the regression tests the fix commits touched, 27 test(s) run, 0 failed, at the tested commit
