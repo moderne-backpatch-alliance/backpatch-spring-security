@@ -1,6 +1,6 @@
 schema: osera-patch-evidence/0.1.0
 producer: moderne
-release: 5.7.14.1-backpatch-00003
+release: 5.7.14.1-backpatch-00004
 baseline: v5.7.14+backpatch.baseline
 fixes:
   - cve: CVE-2026-22732
@@ -17,11 +17,16 @@ fixes:
     upstream: https://nvd.nist.gov/vuln/detail/CVE-2026-40988
     artifacts:
       - org.springframework.security:spring-security-saml2-service-provider
-    note: New in this release; ported onto 5.7.14; fixed at 5.7.14.1-backpatch-00003 (backpatch-spring-security@1ef4a11).
+    note: Carried from 5.7.14.1-backpatch-00003; ported onto 5.7.14; fixed at 5.7.14.1-backpatch-00003 (backpatch-spring-security@1ef4a11).
+  - cve: CVE-2025-22228
+    upstream: https://nvd.nist.gov/vuln/detail/CVE-2025-22228
+    artifacts:
+      - org.springframework.security:spring-security-crypto
+    note: New in this release; ported onto 5.7.14; fixed at 5.7.14.1-backpatch-00004 (backpatch-spring-security@fa4fb35).
 tests:
-  commit: 1ef4a11f9ed7179e19d6673fb238dc9712cee29a
-  command: ./gradlew --quiet --no-daemon -I init-backpatch.gradle -Dbackpatch.version=5.7.14.1-backpatch-00003 -Dbackpatch.repository.url=file:///tmp/osera-unused-repo -Dbackpatch.compile.jdk=11 -p saml2/saml2-service-provider test --rerun-tasks --tests org.springframework.security.saml2.provider.service.authentication.Saml2UtilsTests --tests org.springframework.security.saml2.provider.service.authentication.logout.Saml2UtilsTests --tests org.springframework.security.saml2.provider.service.web.Saml2AuthenticationTokenConverterTests --tests org.springframework.security.saml2.provider.service.web.authentication.Saml2UtilsTests --tests org.springframework.security.saml2.provider.service.web.authentication.logout.Saml2UtilsTests
+  commit: fa4fb35755c2b35fc947779999be3a3a7614e92c
+  command: ./gradlew --quiet --no-daemon -I init-backpatch.gradle -Dbackpatch.version=5.7.14.1-backpatch-00004 -Dbackpatch.repository.url=file:///tmp/osera-unused-repo -Dbackpatch.compile.jdk=11 -p crypto test --rerun-tasks --tests org.springframework.security.crypto.bcrypt.BCryptPasswordEncoderTests
   runtime: OpenJDK 11.0.23 (Temurin), Gradle wrapper of the repository
-  report: spring-security-saml2-service-provider-5.7.14.1-backpatch-00003-tests.zip
+  report: spring-security-crypto-5.7.14.1-backpatch-00004-tests.zip
   result: pass
-  note: the regression tests the fix commits touched, 15 test(s) run, 0 failed, at the tested commit
+  note: the regression tests the fix commits touched, 27 test(s) run, 0 failed, at the tested commit
