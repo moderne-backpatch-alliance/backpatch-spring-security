@@ -1,37 +1,61 @@
 schema: osera-patch-evidence/0.1.0
 producer: moderne
-release: 5.7.14.1-backpatch-00005
+release: 5.7.14.1-backpatch-00006
 baseline: v5.7.14+backpatch.baseline
 fixes:
   - cve: CVE-2026-22732
-    upstream: https://nvd.nist.gov/vuln/detail/CVE-2026-22732
+    upstream_fix_url: https://github.com/spring-projects/spring-security/commit/c3e1a94d8ca4455f30240ec0e56809bf3c48e67b
+    advisory_url: https://nvd.nist.gov/vuln/detail/CVE-2026-22732
+    patch_commit_url: https://github.com/moderne-backpatch-alliance/backpatch-spring-security/commit/5ebff93
+    basis: backport
     artifacts:
       - org.springframework.security:spring-security-web
     note: Carried from 5.7.14.1-backpatch-00001; ported onto 5.7.14; fixed at 5.7.14.1-backpatch-00001 (backpatch-spring-security@5ebff93).
   - cve: CVE-2026-47838
-    upstream: https://nvd.nist.gov/vuln/detail/CVE-2026-47838
+    upstream_fix_url: https://github.com/spring-projects/spring-security/commit/e3ad551ab337d8a1e17217994b45fed6c68ce69e
+    advisory_url: https://nvd.nist.gov/vuln/detail/CVE-2026-47838
+    patch_commit_url: https://github.com/moderne-backpatch-alliance/backpatch-spring-security/compare/377a7e4~1...75ef229
+    basis: adapted
     artifacts:
       - org.springframework.security:spring-security-web
     note: Carried from 5.7.14.1-backpatch-00002; ported onto 5.7.14; fixed at 5.7.14.1-backpatch-00002 (backpatch-spring-security@377a7e4..75ef229).
   - cve: CVE-2026-40988
-    upstream: https://nvd.nist.gov/vuln/detail/CVE-2026-40988
+    upstream_fix_url: https://github.com/spring-projects/spring-security/commit/9d4d9065b48508c9e115f2f894632120787fd1df
+    advisory_url: https://nvd.nist.gov/vuln/detail/CVE-2026-40988
+    patch_commit_url: https://github.com/moderne-backpatch-alliance/backpatch-spring-security/commit/1ef4a11
+    basis: adapted
     artifacts:
       - org.springframework.security:spring-security-saml2-service-provider
     note: Carried from 5.7.14.1-backpatch-00003; ported onto 5.7.14; fixed at 5.7.14.1-backpatch-00003 (backpatch-spring-security@1ef4a11).
   - cve: CVE-2025-22228
-    upstream: https://nvd.nist.gov/vuln/detail/CVE-2025-22228
+    upstream_fix_url: https://github.com/spring-projects/spring-security/commit/46f0dc6dfc8402cd556c598fdf2d31f9d46cdbf3
+    advisory_url: https://nvd.nist.gov/vuln/detail/CVE-2025-22228
+    patch_commit_url: https://github.com/moderne-backpatch-alliance/backpatch-spring-security/commit/fa4fb35
+    basis: backport
     artifacts:
       - org.springframework.security:spring-security-crypto
     note: Carried from 5.7.14.1-backpatch-00004; ported onto 5.7.14; fixed at 5.7.14.1-backpatch-00004 (backpatch-spring-security@fa4fb35).
   - cve: CVE-2026-41706
-    upstream: https://nvd.nist.gov/vuln/detail/CVE-2026-41706
+    upstream_fix_url: https://github.com/spring-projects/spring-security/commit/a14c9d66b15946d2040a3681b55fe29ac145c5c9
+    advisory_url: https://nvd.nist.gov/vuln/detail/CVE-2026-41706
+    patch_commit_url: https://github.com/moderne-backpatch-alliance/backpatch-spring-security/compare/50b528d~1...6c4475e
+    basis: backport
     artifacts:
       - org.springframework.security:spring-security-web
-    note: New in this release; ported onto 5.7.14; fixed at 5.7.14.1-backpatch-00005 (backpatch-spring-security@50b528d..6c4475e).
+    note: Carried from 5.7.14.1-backpatch-00005; ported onto 5.7.14; fixed at 5.7.14.1-backpatch-00005 (backpatch-spring-security@50b528d..6c4475e).
+  - cve: CVE-2026-59270
+    upstream_fix_url: https://github.com/spring-projects/spring-security/commit/59003481740e601dabce06869b85cac4264ea541
+    advisory_url: https://nvd.nist.gov/vuln/detail/CVE-2026-59270
+    patch_commit_url: https://github.com/moderne-backpatch-alliance/backpatch-spring-security/commit/4410bb9
+    basis: adapted
+    artifacts:
+      - org.springframework.security:spring-security-ldap
+    note: New in this release; ported onto 5.7.14; fixed at 5.7.14.1-backpatch-00006 (backpatch-spring-security@4410bb9). The embedded ApacheDS server (ApacheDSContainer, @Deprecated in 5.7) is unchanged and still listens on all interfaces; the advisory names only UnboundIdContainer.
 tests:
-  commit: 6c4475e33c93db93cde1418e40b578dbca0c63bb
-  command: ./gradlew --quiet --no-daemon -I init-backpatch.gradle -Dbackpatch.version=5.7.14.1-backpatch-00005 -Dbackpatch.repository.url=file:///tmp/osera-unused-repo -Dbackpatch.compile.jdk=11 -p web test --rerun-tasks --tests org.springframework.security.web.savedrequest.CookieRequestCacheTests --tests org.springframework.security.web.savedrequest.RequestCacheAwareFilterTests --tests org.springframework.security.web.server.savedrequest.CookieServerRequestCacheTests
-  runtime: OpenJDK 11.0.23 (Temurin), Gradle wrapper of the repository
-  report: spring-security-web-5.7.14.1-backpatch-00005-tests.zip
+  commit: 4410bb98e44324dc7783ea58d0de433b2542e7aa
+  command: ./gradlew --no-daemon -I <alliance>/ecosystem/gradle/init-backpatch.gradle -Dbackpatch.version=5.7.14.1-backpatch-00006 -Dbackpatch.repository.url=file:///nonexistent -Dbackpatch.compile.jdk=11 :spring-security-ldap:test :spring-security-ldap:integrationTest :spring-security-config:test :spring-security-config:integrationTest --rerun-tasks --continue
+  runtime: OpenJDK 11.0.20 (Zulu 11.66+15), Gradle wrapper of the repository
+  report: spring-security-ldap-5.7.14.1-backpatch-00006-tests.zip
+  report_sha256: e802859967cdc8424af6e12952cff38834a1302aa98183949eea421d0e0d7dcf
   result: pass
-  note: the regression tests the fix commits touched, 27 test(s) run, 0 failed, at the tested commit
+  note: the full module suites, test and integrationTest, of spring-security-ldap (90 + 91 tests run) and spring-security-config (2262 + 75), 0 failed, 0 errors, 1 skipped, at the tested commit
