@@ -1,6 +1,6 @@
 schema: osera-patch-evidence/0.1.0
 producer: moderne
-release: 5.7.14.1-backpatch-00006
+release: 5.7.14.1-backpatch-00007
 baseline: v5.7.14+backpatch.baseline
 fixes:
   - cve: CVE-2026-22732
@@ -50,12 +50,11 @@ fixes:
     basis: adapted
     artifacts:
       - org.springframework.security:spring-security-ldap
-    note: New in this release; ported onto 5.7.14; fixed at 5.7.14.1-backpatch-00006 (backpatch-spring-security@4410bb9). The embedded ApacheDS server (ApacheDSContainer, @Deprecated in 5.7) is unchanged and still listens on all interfaces; the advisory names only UnboundIdContainer.
+    note: Carried from 5.7.14.1-backpatch-00006; ported onto 5.7.14; fixed at 5.7.14.1-backpatch-00006 (backpatch-spring-security@4410bb9).
 tests:
-  commit: 4410bb98e44324dc7783ea58d0de433b2542e7aa
-  command: ./gradlew --no-daemon -I <alliance>/ecosystem/gradle/init-backpatch.gradle -Dbackpatch.version=5.7.14.1-backpatch-00006 -Dbackpatch.repository.url=file:///nonexistent -Dbackpatch.compile.jdk=11 :spring-security-ldap:test :spring-security-ldap:integrationTest :spring-security-config:test :spring-security-config:integrationTest --rerun-tasks --continue
-  runtime: OpenJDK 11.0.20 (Zulu 11.66+15), Gradle wrapper of the repository
-  report: spring-security-ldap-5.7.14.1-backpatch-00006-tests.zip
-  report_sha256: e802859967cdc8424af6e12952cff38834a1302aa98183949eea421d0e0d7dcf
+  commit: b1b11bc55ee978caabd2fe7c11bdf4e03cdfc368
+  command: none in this repository
+  runtime: none, no build or test ran for this release
+  report: carried, see the evidence of the release named in the note
   result: pass
-  note: the full module suites, test and integrationTest, of spring-security-ldap (90 + 91 tests run) and spring-security-config (2262 + 75), 0 failed, 0 errors, 1 skipped, at the tested commit
+  note: "this release is a tooling update, it carries no new fix, nothing ran here; its test provenance is tooling-2026-11-03-spring-security-5.7: a tooling update of moderne-backpatch-alliance/backpatch-spring-security at v5.7.14.1-backpatch-00006, whose .backpatch/patch-evidence.yaml says what ran"
