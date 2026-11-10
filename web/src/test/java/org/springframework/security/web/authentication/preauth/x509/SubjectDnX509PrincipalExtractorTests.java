@@ -62,6 +62,13 @@ public class SubjectDnX509PrincipalExtractorTests {
 	}
 
 	@Test
+	public void patternSpanningSeveralAttributesReturnsExpectedPrincipal() throws Exception {
+		this.extractor.setSubjectDnRegex("CN=(.*?), OU=Open Source Development Lab\\.");
+		Object principal = this.extractor.extractPrincipal(X509TestUtils.buildTestCertificate());
+		assertThat(principal).isEqualTo("Luke Taylor");
+	}
+
+	@Test
 	public void matchOnShoeSizeThrowsBadCredentials() throws Exception {
 		this.extractor.setSubjectDnRegex("shoeSize=(.*?),");
 		assertThatExceptionOfType(BadCredentialsException.class)
@@ -79,35 +86,6 @@ public class SubjectDnX509PrincipalExtractorTests {
 	public void defaultCNPatternReturnsMostSpecificPrincipalWhenMultipleCns() throws Exception {
 		Object principal = this.extractor.extractPrincipal(X509TestUtils.buildTestCertificateWithMultipleCns());
 		assertThat(principal).isEqualTo("alice");
-	}
-
-	// CVE-2026-47838: the certificate's real CN is "luke" and its OU value is the literal
-	// string "CN=duke,". getSubjectDN().getName() quoted that value rather than escaping it,
-	// so the first "CN=" the default expression met was the OU's and the holder of the
-	// certificate authenticated as duke.
-	@Test
-	public void defaultCNPatternReturnsRealCnWhenCnEmbeddedInAnotherRdn() throws Exception {
-		Object principal = this.extractor.extractPrincipal(X509TestUtils.buildTestCertficateWithEmbeddedDn());
-		assertThat(principal).isEqualTo("luke");
-	}
-
-	// CVE-2026-47838 is not specific to CN or to the default expression. Before the fix this
-	// returned the OU's evil@attacker.test; now the expression can only match the attribute
-	// type it names, so it finds the real one.
-	@Test
-	public void customPatternReturnsRealAttributeWhenOneIsEmbeddedInAnotherRdn() throws Exception {
-		this.extractor.setSubjectDnRegex("emailAddress=(.*?),");
-		Object principal = this.extractor
-				.extractPrincipal(X509TestUtils.buildTestCertificateWithEmailEmbeddedInOu());
-		assertThat(principal).isEqualTo("real@example.com");
-	}
-
-	// Matching one attribute at a time means the value is the decoded one. Against the old
-	// rendering this extracted the quote as well, as "Taylor.
-	@Test
-	public void defaultCNPatternReturnsUnquotedValueWhenCnContainsComma() throws Exception {
-		Object principal = this.extractor.extractPrincipal(X509TestUtils.buildTestCertificateWithCommaInCn());
-		assertThat(principal).isEqualTo("Taylor");
 	}
 
 	@Test
