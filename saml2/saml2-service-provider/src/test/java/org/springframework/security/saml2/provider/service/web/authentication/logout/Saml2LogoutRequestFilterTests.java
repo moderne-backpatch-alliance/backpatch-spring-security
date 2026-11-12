@@ -37,6 +37,7 @@ import org.springframework.security.saml2.provider.service.web.RelyingPartyRegis
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.mock;
@@ -111,6 +112,29 @@ public class Saml2LogoutRequestFilterTests {
 		String content = response.getContentAsString();
 		assertThat(content).contains(Saml2ParameterNames.SAML_RESPONSE);
 		assertThat(content).contains(registration.getAssertingPartyDetails().getSingleLogoutServiceResponseLocation());
+		assertThat(response.getHeader("Content-Security-Policy")).matches("script-src 'nonce-.+'");
+	}
+
+	@Test
+	public void doFilterWhenPostAndResponseLocationHasQuoteThenNotWrittenRaw() throws Exception {
+		RelyingPartyRegistration registration = TestRelyingPartyRegistrations.full()
+				.assertingPartyDetails((party) -> party.singleLogoutServiceBinding(Saml2MessageBinding.POST)
+						.singleLogoutServiceResponseLocation("https://ap.example.org/a\"b"))
+				.build();
+		Authentication authentication = new TestingAuthenticationToken("user", "password");
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+		MockHttpServletRequest request = new MockHttpServletRequest("POST", "/logout/saml2/slo");
+		request.setServletPath("/logout/saml2/slo");
+		request.setParameter(Saml2ParameterNames.SAML_REQUEST, "request");
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		given(this.relyingPartyRegistrationResolver.resolve(any(), any())).willReturn(registration);
+		given(this.logoutRequestValidator.validate(any())).willReturn(Saml2LogoutValidatorResult.success());
+		Saml2LogoutResponse logoutResponse = Saml2LogoutResponse.withRelyingPartyRegistration(registration)
+				.samlResponse("response").build();
+		given(this.logoutResponseResolver.resolve(any(), any())).willReturn(logoutResponse);
+		assertThatIllegalArgumentException().isThrownBy(
+				() -> this.logoutRequestProcessingFilter.doFilterInternal(request, response, new MockFilterChain()));
+		assertThat(response.getContentAsString()).doesNotContain("a\"b");
 	}
 
 	@Test

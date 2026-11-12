@@ -26,17 +26,16 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.saml2.core.Saml2ParameterNames;
 import org.springframework.security.saml2.provider.service.authentication.logout.Saml2LogoutRequest;
 import org.springframework.security.saml2.provider.service.registration.Saml2MessageBinding;
 import org.springframework.security.web.DefaultRedirectStrategy;
+import org.springframework.security.web.FormPostRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
-import org.springframework.web.util.HtmlUtils;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.util.UriUtils;
 
@@ -54,6 +53,8 @@ public final class Saml2RelyingPartyInitiatedLogoutSuccessHandler implements Log
 	private final Saml2LogoutRequestResolver logoutRequestResolver;
 
 	private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
+
+	private final RedirectStrategy formPostRedirectStrategy = new FormPostRedirectStrategy();
 
 	private Saml2LogoutRequestRepository logoutRequestRepository = new HttpSessionLogoutRequestRepository();
 
@@ -88,7 +89,7 @@ public final class Saml2RelyingPartyInitiatedLogoutSuccessHandler implements Log
 			doRedirect(request, response, logoutRequest);
 		}
 		else {
-			doPost(response, logoutRequest);
+			doPost(request, response, logoutRequest);
 		}
 	}
 
@@ -121,52 +122,13 @@ public final class Saml2RelyingPartyInitiatedLogoutSuccessHandler implements Log
 		}
 	}
 
-	private void doPost(HttpServletResponse response, Saml2LogoutRequest logoutRequest) throws IOException {
+	private void doPost(HttpServletRequest request, HttpServletResponse response, Saml2LogoutRequest logoutRequest)
+			throws IOException {
 		String location = logoutRequest.getLocation();
-		String saml = logoutRequest.getSamlRequest();
-		String relayState = logoutRequest.getRelayState();
-		String html = createSamlPostRequestFormData(location, saml, relayState);
-		response.setContentType(MediaType.TEXT_HTML_VALUE);
-		response.getWriter().write(html);
-	}
-
-	private String createSamlPostRequestFormData(String location, String saml, String relayState) {
-		StringBuilder html = new StringBuilder();
-		html.append("<!DOCTYPE html>\n");
-		html.append("<html>\n").append("    <head>\n");
-		html.append("        <meta charset=\"utf-8\" />\n");
-		html.append("    </head>\n");
-		html.append("    <body onload=\"document.forms[0].submit()\">\n");
-		html.append("        <noscript>\n");
-		html.append("            <p>\n");
-		html.append("                <strong>Note:</strong> Since your browser does not support JavaScript,\n");
-		html.append("                you must press the Continue button once to proceed.\n");
-		html.append("            </p>\n");
-		html.append("        </noscript>\n");
-		html.append("        \n");
-		html.append("        <form action=\"");
-		html.append(location);
-		html.append("\" method=\"post\">\n");
-		html.append("            <div>\n");
-		html.append("                <input type=\"hidden\" name=\"SAMLRequest\" value=\"");
-		html.append(HtmlUtils.htmlEscape(saml));
-		html.append("\"/>\n");
-		if (StringUtils.hasText(relayState)) {
-			html.append("                <input type=\"hidden\" name=\"RelayState\" value=\"");
-			html.append(HtmlUtils.htmlEscape(relayState));
-			html.append("\"/>\n");
-		}
-		html.append("            </div>\n");
-		html.append("            <noscript>\n");
-		html.append("                <div>\n");
-		html.append("                    <input type=\"submit\" value=\"Continue\"/>\n");
-		html.append("                </div>\n");
-		html.append("            </noscript>\n");
-		html.append("        </form>\n");
-		html.append("        \n");
-		html.append("    </body>\n");
-		html.append("</html>");
-		return html.toString();
+		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(location);
+		addParameter(Saml2ParameterNames.SAML_REQUEST, logoutRequest::getParameter, uriBuilder);
+		addParameter(Saml2ParameterNames.RELAY_STATE, logoutRequest::getParameter, uriBuilder);
+		this.formPostRedirectStrategy.sendRedirect(request, response, uriBuilder.build(true).toUriString());
 	}
 
 }

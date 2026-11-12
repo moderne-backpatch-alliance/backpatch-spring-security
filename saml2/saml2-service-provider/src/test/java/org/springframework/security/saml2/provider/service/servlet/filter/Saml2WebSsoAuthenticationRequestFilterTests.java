@@ -198,10 +198,25 @@ public class Saml2WebSsoAuthenticationRequestFilterTests {
 		given(this.factory.createPostAuthenticationRequest(any())).willReturn(request);
 		this.filter.doFilterInternal(this.request, this.response, this.filterChain);
 		assertThat(this.response.getHeader("Location")).isNull();
-		assertThat(this.response.getContentAsString())
-				.contains("<form action=\"https://sso-url.example.com/IDP/SSO\" method=\"post\">")
-				.contains("<input type=\"hidden\" name=\"SAMLRequest\"")
-				.contains("value=\"" + relayStateEncoded + "\"");
+		assertThat(this.response.getContentAsString()).contains("action=\"https://sso-url.example.com/IDP/SSO\"")
+				.contains("name=\"SAMLRequest\"").contains("value=\"" + relayStateEncoded + "\"");
+		assertThat(this.response.getHeader("Content-Security-Policy")).matches("script-src 'nonce-.+'");
+	}
+
+	@Test
+	public void doFilterWhenPostAndLocationHasQuoteThenNotWrittenRaw() throws Exception {
+		RelyingPartyRegistration registration = this.rpBuilder
+				.assertingPartyDetails((asserting) -> asserting.singleSignOnServiceBinding(Saml2MessageBinding.POST))
+				.build();
+		Saml2AuthenticationRequestContext context = authenticationRequestContext()
+				.relyingPartyRegistration(registration).build();
+		Saml2PostAuthenticationRequest request = postAuthenticationRequest(context)
+				.authenticationRequestUri("https://sso-url.example.com/a\"b").build();
+		given(this.resolver.resolve(any())).willReturn(context);
+		given(this.factory.createPostAuthenticationRequest(any())).willReturn(request);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> this.filter.doFilterInternal(this.request, this.response, this.filterChain));
+		assertThat(this.response.getContentAsString()).doesNotContain("a\"b");
 	}
 
 	@Test

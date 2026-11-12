@@ -36,6 +36,7 @@ import org.springframework.security.saml2.provider.service.registration.Saml2Mes
 import org.springframework.security.saml2.provider.service.registration.TestRelyingPartyRegistrations;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.mock;
@@ -97,6 +98,26 @@ public class Saml2RelyingPartyInitiatedLogoutSuccessHandlerTests {
 		String content = response.getContentAsString();
 		assertThat(content).contains(Saml2ParameterNames.SAML_REQUEST);
 		assertThat(content).contains(registration.getAssertingPartyDetails().getSingleLogoutServiceLocation());
+		assertThat(response.getHeader("Content-Security-Policy")).matches("script-src 'nonce-.+'");
+	}
+
+	@Test
+	public void onLogoutSuccessWhenPostAndLocationHasQuoteThenNotWrittenRaw() throws Exception {
+		RelyingPartyRegistration registration = TestRelyingPartyRegistrations.full()
+				.assertingPartyDetails((party) -> party.singleLogoutServiceBinding(Saml2MessageBinding.POST)
+						.singleLogoutServiceLocation("https://ap.example.org/a\"b"))
+				.build();
+		Authentication authentication = authentication(registration);
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+		Saml2LogoutRequest logoutRequest = Saml2LogoutRequest.withRelyingPartyRegistration(registration)
+				.samlRequest("request").build();
+		MockHttpServletRequest request = new MockHttpServletRequest("POST", "/saml2/logout");
+		request.setServletPath("/saml2/logout");
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		given(this.logoutRequestResolver.resolve(any(), any())).willReturn(logoutRequest);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> this.logoutRequestSuccessHandler.onLogoutSuccess(request, response, authentication));
+		assertThat(response.getContentAsString()).doesNotContain("a\"b");
 	}
 
 	private Saml2Authentication authentication(RelyingPartyRegistration registration) {
