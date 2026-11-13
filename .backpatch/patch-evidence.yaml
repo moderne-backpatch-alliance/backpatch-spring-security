@@ -1,6 +1,6 @@
 schema: osera-patch-evidence/0.1.0
 producer: moderne
-release: 5.7.14.1-backpatch-00009
+release: 5.7.14.1-backpatch-00010
 baseline: v5.7.14+backpatch.baseline
 fixes:
   - cve: CVE-2026-22732
@@ -66,12 +66,21 @@ fixes:
     basis: adapted
     artifacts:
       - org.springframework.security:spring-security-core
-    note: New in this release; ported onto 5.7.14; fixed at 5.7.14.1-backpatch-00009 (backpatch-spring-security@005a366).
+    note: Carried from 5.7.14.1-backpatch-00009; ported onto 5.7.14; fixed at 5.7.14.1-backpatch-00009 (backpatch-spring-security@005a366).
+  - cve: CVE-2026-41003
+    upstream_fix_url: https://github.com/advisories/GHSA-3pjj-qpw6-5fcm
+    advisory_url: https://nvd.nist.gov/vuln/detail/CVE-2026-41003
+    patch_commit_url: https://github.com/moderne-backpatch-alliance/backpatch-spring-security/commit/ac58574
+    basis: adapted
+    artifacts:
+      - org.springframework.security:spring-security-web
+      - org.springframework.security:spring-security-saml2-service-provider
+    note: "New in this release; ported onto 5.7.14; fixed at 5.7.14.1-backpatch-00010 (backpatch-spring-security@ac58574). Spring Security now writes the auto-submitting page for the SAML 2.0 POST binding (AuthnRequest, LogoutRequest and LogoutResponse) with `FormPostRedirectStrategy`, which escapes the form action and submits the form from a script allowed by its own `Content-Security-Policy: script-src 'nonce-...'` header (CVE-2026-41003). If a proxy, servlet filter or container adds a second `Content-Security-Policy` header to that response whose `script-src` does not allow that script, the browser blocks it and the user is left on a blank page; tests that match the old `<body onload=\"document.forms[0].submit()\">` markup no longer find it. Exempt the SAML endpoints from the extra header, or use the redirect binding through `singleSignOnServiceBinding(Saml2MessageBinding.REDIRECT)` and `singleLogoutServiceBinding(Saml2MessageBinding.REDIRECT)` where your identity provider supports it, and match tests on the new `<form id=\"redirect-form\" method=\"POST\" ...>`."
 tests:
-  commit: 005a36644415d7c6fa6d1d206a0d8d2a2e1d940f
+  commit: ac58574547fa86388be999dd5591bdfd322bc7ff
   command: gradlew test on core, web and saml2-service-provider, plus saml2-service-provider's opensaml3Test and opensaml4Test with the test source set's classes on their classpath, --continue, with JDK_JAVA_OPTIONS=-Dspring.security.timing-tests=true
   runtime: openjdk version 11.0.20 2023-07-18 LTS, Gradle wrapper
-  report: spring-security-core-5.7.14.1-backpatch-00009-tests.zip
-  report_sha256: d194c9fc5fb9cbf1ebe4e18fe7d06dd5f02fadb31e35259c150d525ace381bac
+  report: spring-security-web-5.7.14.1-backpatch-00010-tests.zip
+  report_sha256: 1f86f85a4280bf03ccf55fdc1cca73c5df9604f0940a4e78f10835c81bcb6a46
   result: pass
-  note: 3455 tests at the patch commit, 3 of them skipped by the suite, 0 failed, 0 errors.
+  note: 3465 tests at the patch commit, 3 of them skipped by the suite, 0 failed, 0 errors.
