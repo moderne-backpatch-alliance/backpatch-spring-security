@@ -1,6 +1,6 @@
 schema: osera-patch-evidence/0.1.0
 producer: moderne
-release: 5.7.14.1-backpatch-00008
+release: 5.7.14.1-backpatch-00009
 baseline: v5.7.14+backpatch.baseline
 fixes:
   - cve: CVE-2026-22732
@@ -18,7 +18,7 @@ fixes:
     basis: adapted
     artifacts:
       - org.springframework.security:spring-security-web
-    note: Carried from 5.7.14.1-backpatch-00002; ported onto 5.7.14; fixed at 5.7.14.1-backpatch-00002 (backpatch-spring-security@377a7e4..75ef229).
+    note: Carried from 5.7.14.1-backpatch-00002; a superseded fix, ported onto 5.7.14 at 5.7.14.1-backpatch-00002 (backpatch-spring-security@377a7e4..75ef229).
   - cve: CVE-2026-40988
     upstream_fix_url: https://github.com/spring-projects/spring-security/commit/9d4d9065b48508c9e115f2f894632120787fd1df
     advisory_url: https://nvd.nist.gov/vuln/detail/CVE-2026-40988
@@ -58,12 +58,20 @@ fixes:
     basis: adapted
     artifacts:
       - org.springframework.security:spring-security-web
-    note: "New in this release; adapted onto 5.7.14; fixed at 5.7.14.1-backpatch-00008 (backpatch-spring-security@bcf97e3). Servlet applications that log in with X.509 client certificates and configure no principal regex take the principal from the certificate's CN attribute itself (CVE-2026-47838). Where another attribute's value contains CN=, the principal is now the CN rather than that value: an OU of \"CN=duke,\" gave duke for a certificate whose CN is luke, and now gives luke. A CN that contains a comma or a quote is returned whole: Taylor, Luke where 5.7.14 gave \"Taylor."
+    note: "Carried from 5.7.14.1-backpatch-00008; ported onto 5.7.14; fixed at 5.7.14.1-backpatch-00008 (backpatch-spring-security@bcf97e3). Servlet applications that log in with X.509 client certificates and configure no principal regex take the principal from the certificate's CN attribute itself (CVE-2026-47838). Where another attribute's value contains CN=, the principal is now the CN rather than that value: an OU of \"CN=duke,\" gave duke for a certificate whose CN is luke, and now gives luke. A CN that contains a comma or a quote is returned whole: Taylor, Luke where 5.7.14 gave \"Taylor."
+  - cve: CVE-2026-22746
+    upstream_fix_url: https://github.com/spring-projects/spring-security/commit/a317a3d8663995daa2bc91593bb88ae2da21ea52
+    advisory_url: https://nvd.nist.gov/vuln/detail/CVE-2026-22746
+    patch_commit_url: https://github.com/moderne-backpatch-alliance/backpatch-spring-security/commit/005a366
+    basis: adapted
+    artifacts:
+      - org.springframework.security:spring-security-core
+    note: New in this release; ported onto 5.7.14; fixed at 5.7.14.1-backpatch-00009 (backpatch-spring-security@005a366).
 tests:
-  commit: bcf97e31dd762289a0f7517b93114ea9132eb024
-  command: 'Gradle wrapper of the repository on JDK 11 with GRADLE_USER_HOME=<alliance>/work/wave0/gradle-home: :spring-security-web:publish with -I <alliance>/ecosystem/gradle/init-backpatch.gradle -Dbackpatch.version=5.7.14.1-backpatch-00008 -Dbackpatch.compile.jdk=11, then :spring-security-core:test :spring-security-web:test :spring-security-saml2-service-provider:test --continue with --init-script <alliance>/work/wave0/items/scripts/gradle-filter.gradle and JDK_JAVA_OPTIONS=-Dspring.security.timing-tests=true'
-  runtime: Azul Zulu (Java 11.0.20) running the build and the tests, macOS aarch64
-  report: spring-security-web-5.7.14.1-backpatch-00008-tests.zip
-  report_sha256: cdb841d45e23907d020c486f98ca5ef447a9abe24e12a455dd95ef27cb0ac103
+  commit: 005a36644415d7c6fa6d1d206a0d8d2a2e1d940f
+  command: gradlew test on core, web and saml2-service-provider, plus saml2-service-provider's opensaml3Test and opensaml4Test with the test source set's classes on their classpath, --continue, with JDK_JAVA_OPTIONS=-Dspring.security.timing-tests=true
+  runtime: openjdk version 11.0.20 2023-07-18 LTS, Gradle wrapper
+  report: spring-security-core-5.7.14.1-backpatch-00009-tests.zip
+  report_sha256: d194c9fc5fb9cbf1ebe4e18fe7d06dd5f02fadb31e35259c150d525ace381bac
   result: pass
-  note: the full suite at the tested commit, 3206 tests run, 0 failed, 0 skipped; core 936, web 2043, saml2-service-provider 227; the regression tests for CVE-2026-47838 are SubjectDnX509PrincipalExtractorTests, SubjectX500PrincipalExtractorTests, X509AuthenticationFilterTests
+  note: 3455 tests at the patch commit, 3 of them skipped by the suite, 0 failed, 0 errors.
