@@ -1,6 +1,6 @@
 schema: osera-patch-evidence/0.1.0
 producer: moderne
-release: 5.3.13.RELEASE-backpatch-00002
+release: 5.3.13.RELEASE-backpatch-00003
 baseline: v5.3.13.RELEASE+backpatch.baseline
 fixes:
   - cve: CVE-2022-22978
@@ -18,12 +18,20 @@ fixes:
     basis: adapted
     artifacts:
       - org.springframework.security:spring-security-crypto
-    note: New in this release; ported onto 5.3.13.RELEASE; fixed at 5.3.13.RELEASE-backpatch-00002 (backpatch-spring-security@06b4c91..07ca88c).
+    note: Carried from 5.3.13.RELEASE-backpatch-00002; ported onto 5.3.13.RELEASE; fixed at 5.3.13.RELEASE-backpatch-00002 (backpatch-spring-security@06b4c91..07ca88c).
+  - cve: CVE-2022-31690
+    upstream_fix_url: https://github.com/spring-projects/spring-security/commit/75004587a419a96d18909030b20c6b16b226ecbe
+    advisory_url: https://nvd.nist.gov/vuln/detail/CVE-2022-31690
+    patch_commit_url: https://github.com/moderne-backpatch-alliance/backpatch-spring-security/commit/4a31f91
+    basis: adapted
+    artifacts:
+      - org.springframework.security:spring-security-oauth2-client
+    note: New in this release; ported onto 5.3.13.RELEASE; fixed at 5.3.13.RELEASE-backpatch-00003 (backpatch-spring-security@4a31f91).
 tests:
-  commit: 07ca88cae8dd057d643c4fa1b233ad5894f1ebfe
-  command: ./gradlew --no-daemon -I springsec-5.3-init.gradle -PexcludeProjects=samples/**,docs/** :spring-security-web:test :spring-security-crypto:test --continue (Gradle 6.2.2; the report decides)
+  commit: 4a31f91bf919eaa1d7a629c3353fe25cb7ca301f
+  command: ./gradlew --no-daemon -I springsec-5.3-init.gradle -PexcludeProjects=samples/**,docs/** :spring-security-web:test :spring-security-crypto:test :spring-security-oauth2-client:test --continue (Gradle 6.2.2; the report decides)
   runtime: OpenJDK 1.8.0_382 (Zulu), Gradle wrapper of the repository
-  report: spring-security-crypto-5.3.13.RELEASE-backpatch-00002-tests.zip
-  report_sha256: d4812a25e4ca13aff20d80fc16b98539ff5f569eafde70752a5a7e223fa23963
+  report: spring-security-oauth2-client-5.3.13.RELEASE-backpatch-00003-tests.zip
+  report_sha256: 662d4d3a94d20f615b477c067ee266141dae259da2b7261b4e5319d68c0662b0
   result: pass
-  note: 1865 tests at the patch commit, 0 of them skipped by the suite, 0 failed, 0 errors.
+  note: 2894 tests at the patch commit, 1 of them skipped by the suite, 0 failed, 0 errors.
