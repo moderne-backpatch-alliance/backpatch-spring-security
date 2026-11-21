@@ -1,6 +1,6 @@
 schema: osera-patch-evidence/0.1.0
 producer: moderne
-release: 5.3.13.RELEASE-backpatch-00001
+release: 5.3.13.RELEASE-backpatch-00002
 baseline: v5.3.13.RELEASE+backpatch.baseline
 fixes:
   - cve: CVE-2022-22978
@@ -10,12 +10,20 @@ fixes:
     basis: adapted
     artifacts:
       - org.springframework.security:spring-security-web
-    note: New in this release; ported onto 5.3.13.RELEASE; fixed at 5.3.13.RELEASE-backpatch-00001 (backpatch-spring-security@101b1bc).
+    note: Carried from 5.3.13.RELEASE-backpatch-00001; ported onto 5.3.13.RELEASE; fixed at 5.3.13.RELEASE-backpatch-00001 (backpatch-spring-security@101b1bc).
+  - cve: CVE-2022-22976
+    upstream_fix_url: https://github.com/advisories/GHSA-wx54-3278-m5g4
+    advisory_url: https://nvd.nist.gov/vuln/detail/CVE-2022-22976
+    patch_commit_url: https://github.com/moderne-backpatch-alliance/backpatch-spring-security/compare/06b4c91~1...07ca88c
+    basis: adapted
+    artifacts:
+      - org.springframework.security:spring-security-crypto
+    note: New in this release; ported onto 5.3.13.RELEASE; fixed at 5.3.13.RELEASE-backpatch-00002 (backpatch-spring-security@06b4c91..07ca88c).
 tests:
-  commit: 101b1bc8d49a09c9e3b69630ec6fbf01458413db
-  command: ./gradlew --no-daemon -I springsec-5.3-init.gradle -PexcludeProjects=samples/**,docs/** :spring-security-web:test --continue (Gradle 6.2.2; the report decides)
+  commit: 07ca88cae8dd057d643c4fa1b233ad5894f1ebfe
+  command: ./gradlew --no-daemon -I springsec-5.3-init.gradle -PexcludeProjects=samples/**,docs/** :spring-security-web:test :spring-security-crypto:test --continue (Gradle 6.2.2; the report decides)
   runtime: OpenJDK 1.8.0_382 (Zulu), Gradle wrapper of the repository
-  report: spring-security-web-5.3.13.RELEASE-backpatch-00001-tests.zip
-  report_sha256: f28a489787c701d742b8412b629b06735dbd5e879d0f2fd75a0ab99ac09a9f9a
+  report: spring-security-crypto-5.3.13.RELEASE-backpatch-00002-tests.zip
+  report_sha256: d4812a25e4ca13aff20d80fc16b98539ff5f569eafde70752a5a7e223fa23963
   result: pass
-  note: 1627 tests at the patch commit, 0 of them skipped by the suite, 0 failed, 0 errors.
+  note: 1865 tests at the patch commit, 0 of them skipped by the suite, 0 failed, 0 errors.
