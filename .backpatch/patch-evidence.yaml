@@ -1,0 +1,21 @@
+schema: osera-patch-evidence/0.1.0
+producer: moderne
+release: 5.3.13.RELEASE-backpatch-00001
+baseline: v5.3.13.RELEASE+backpatch.baseline
+fixes:
+  - cve: CVE-2022-22978
+    upstream_fix_url: https://github.com/spring-projects/spring-security/commit/7f121e82f42ed412822084b1c5f51e70ea2bb3dc
+    advisory_url: https://nvd.nist.gov/vuln/detail/CVE-2022-22978
+    patch_commit_url: https://github.com/moderne-backpatch-alliance/backpatch-spring-security/commit/101b1bc
+    basis: adapted
+    artifacts:
+      - org.springframework.security:spring-security-web
+    note: New in this release; ported onto 5.3.13.RELEASE; fixed at 5.3.13.RELEASE-backpatch-00001 (backpatch-spring-security@101b1bc).
+tests:
+  commit: 101b1bc8d49a09c9e3b69630ec6fbf01458413db
+  command: ./gradlew --no-daemon -I springsec-5.3-init.gradle -PexcludeProjects=samples/**,docs/** :spring-security-web:test --continue (Gradle 6.2.2; the report decides)
+  runtime: OpenJDK 1.8.0_382 (Zulu), Gradle wrapper of the repository
+  report: spring-security-web-5.3.13.RELEASE-backpatch-00001-tests.zip
+  report_sha256: f28a489787c701d742b8412b629b06735dbd5e879d0f2fd75a0ab99ac09a9f9a
+  result: pass
+  note: 1627 tests at the patch commit, 0 of them skipped by the suite, 0 failed, 0 errors.
