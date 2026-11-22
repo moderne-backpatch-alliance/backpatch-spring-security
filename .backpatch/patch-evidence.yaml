@@ -1,0 +1,21 @@
+schema: osera-patch-evidence/0.1.0
+producer: moderne
+release: 6.4.13.1-backpatch-00001
+baseline: v6.4.13+backpatch.baseline
+fixes:
+  - cve: CVE-2026-22751
+    upstream_fix_url: https://github.com/spring-projects/spring-security/commit/4187af38b251fc97fdf9949f7869618111e6e261
+    advisory_url: https://nvd.nist.gov/vuln/detail/CVE-2026-22751
+    patch_commit_url: https://github.com/moderne-backpatch-alliance/backpatch-spring-security/commit/af7cd69
+    basis: adapted
+    artifacts:
+      - org.springframework.security:spring-security-core
+    note: New in this release; ported onto 6.4.13; fixed at 6.4.13.1-backpatch-00001 (backpatch-spring-security@af7cd69).
+tests:
+  commit: af7cd69f16e18883a63adf917f1bb1aeb8cb2c3c
+  command: ./gradlew --no-daemon :spring-security-core:test --continue (the tag's Gradle 8.14 wrapper, Central through Moderne's cache; the report decides)
+  runtime: OpenJDK 17.0.16 (Zulu), Gradle wrapper of the repository
+  report: spring-security-core-6.4.13.1-backpatch-00001-tests.zip
+  report_sha256: d63c08eb016a6cb4600313e2e2c5cda17bbb991fc3a3dff78a3b41d65529739a
+  result: pass
+  note: 1319 tests at the patch commit, 21 of them skipped by the suite, 0 failed, 0 errors.
