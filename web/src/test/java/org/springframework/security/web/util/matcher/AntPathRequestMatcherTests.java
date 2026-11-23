@@ -16,6 +16,8 @@
 
 package org.springframework.security.web.util.matcher;
 
+import java.util.Locale;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.junit.Test;
@@ -216,6 +218,19 @@ public class AntPathRequestMatcherTests {
 		request.setMethod("INVALID");
 
 		assertThat(matcher.matches(request)).isFalse();
+	}
+
+	@Test
+	public void matchesWhenCaseInsensitiveAndTurkishDefaultLocaleThenMatches() {
+		Locale defaultLocale = Locale.getDefault();
+		try {
+			Locale.setDefault(new Locale("tr"));
+			AntPathRequestMatcher matcher = new AntPathRequestMatcher("/admin/**", null, false);
+			assertThat(matcher.matches(createRequest("/ADMIN/x"))).isTrue();
+		}
+		finally {
+			Locale.setDefault(defaultLocale);
+		}
 	}
 
 	private HttpServletRequest createRequestWithNullMethod(String path) {

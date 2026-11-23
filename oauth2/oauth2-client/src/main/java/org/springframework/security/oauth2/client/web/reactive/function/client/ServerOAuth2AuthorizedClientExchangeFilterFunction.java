@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2020 the original author or authors.
+ * Copyright 2002-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,6 +60,7 @@ import reactor.core.publisher.Mono;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -674,7 +675,7 @@ public final class ServerOAuth2AuthorizedClientExchangeFilterFunction implements
 		private Map<String, String> parseAuthParameters(String wwwAuthenticateHeader) {
 			return Stream.of(wwwAuthenticateHeader)
 					.filter(header -> !StringUtils.isEmpty(header))
-					.filter(header -> header.toLowerCase().startsWith("bearer"))
+					.filter(header -> header.toLowerCase(Locale.ENGLISH).startsWith("bearer"))
 					.map(header -> header.substring("bearer".length()))
 					.map(header -> header.split(","))
 					.flatMap(Stream::of)

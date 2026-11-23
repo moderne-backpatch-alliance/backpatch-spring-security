@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2018 the original author or authors.
+ * Copyright 2002-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Locale;
 import javax.naming.Context;
 import javax.naming.NameNotFoundException;
 import javax.naming.NamingEnumeration;
@@ -118,7 +119,7 @@ public class LdapUserDetailsManager implements UserDetailsManager {
 		Object group = ne.next();
 		String role = group.toString();
 
-		return new SimpleGrantedAuthority(rolePrefix + role.toUpperCase());
+		return new SimpleGrantedAuthority(rolePrefix + role.toUpperCase(Locale.ROOT));
 	};
 
 	private String[] attributesToRetrieve;
@@ -308,7 +309,7 @@ public class LdapUserDetailsManager implements UserDetailsManager {
 	 */
 	protected DistinguishedName buildGroupDn(String group) {
 		DistinguishedName dn = new DistinguishedName(groupSearchBase);
-		dn.add(groupRoleAttributeName, group.toLowerCase());
+		dn.add(groupRoleAttributeName, group.toLowerCase(Locale.ROOT));
 
 		return dn;
 	}

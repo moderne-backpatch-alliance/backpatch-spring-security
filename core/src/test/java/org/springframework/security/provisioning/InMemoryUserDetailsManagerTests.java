@@ -16,6 +16,8 @@
 
 package org.springframework.security.provisioning;
 
+import java.util.Locale;
+
 import org.junit.Test;
 import org.springframework.security.core.userdetails.PasswordEncodedUser;
 import org.springframework.security.core.userdetails.User;
@@ -48,5 +50,20 @@ public class InMemoryUserDetailsManagerTests {
 		String newPassword = "newPassword";
 		this.manager.updatePassword(userNotLowerCase, newPassword);
 		assertThat(this.manager.loadUserByUsername(userNotLowerCase.getUsername()).getPassword()).isEqualTo(newPassword);
+	}
+
+	@Test
+	public void loadUserByUsernameWhenTurkishDefaultLocaleThenFindsUser() {
+		Locale defaultLocale = Locale.getDefault();
+		try {
+			Locale.setDefault(new Locale("tr"));
+			InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
+			manager.createUser(User.withUserDetails(PasswordEncodedUser.user()).username("admin").build());
+			assertThat(manager.userExists("ADMIN")).isTrue();
+			assertThat(manager.loadUserByUsername("ADMIN").getUsername()).isEqualTo("admin");
+		}
+		finally {
+			Locale.setDefault(defaultLocale);
+		}
 	}
 }

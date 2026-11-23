@@ -24,6 +24,7 @@ import org.jasig.cas.client.validation.Assertion;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Locale;
 
 /**
  * Populates the {@link org.springframework.security.core.GrantedAuthority}s for a user by
@@ -68,14 +69,14 @@ public final class GrantedAuthorityFromAssertionAttributesUserDetailsService ext
 
 				for (final Object o : list) {
 					grantedAuthorities.add(new SimpleGrantedAuthority(
-							this.convertToUpperCase ? o.toString().toUpperCase() : o
+							this.convertToUpperCase ? o.toString().toUpperCase(Locale.ROOT) : o
 									.toString()));
 				}
 
 			}
 			else {
 				grantedAuthorities.add(new SimpleGrantedAuthority(
-						this.convertToUpperCase ? value.toString().toUpperCase() : value
+						this.convertToUpperCase ? value.toString().toUpperCase(Locale.ROOT) : value
 								.toString()));
 			}
 
