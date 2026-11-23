@@ -1,6 +1,6 @@
 schema: osera-patch-evidence/0.1.0
 producer: moderne
-release: 5.3.13.RELEASE-backpatch-00003
+release: 5.3.13.RELEASE-backpatch-00004
 baseline: v5.3.13.RELEASE+backpatch.baseline
 fixes:
   - cve: CVE-2022-22978
@@ -26,12 +26,27 @@ fixes:
     basis: adapted
     artifacts:
       - org.springframework.security:spring-security-oauth2-client
-    note: New in this release; ported onto 5.3.13.RELEASE; fixed at 5.3.13.RELEASE-backpatch-00003 (backpatch-spring-security@4a31f91).
+    note: Carried from 5.3.13.RELEASE-backpatch-00003; ported onto 5.3.13.RELEASE; fixed at 5.3.13.RELEASE-backpatch-00003 (backpatch-spring-security@4a31f91).
+  - cve: CVE-2024-38827
+    upstream_fix_url: https://github.com/spring-projects/spring-security/commit/0eaffb37e7f10f30fdbba1d3728e66e26837ff89
+    advisory_url: https://nvd.nist.gov/vuln/detail/CVE-2024-38827
+    patch_commit_url: https://github.com/moderne-backpatch-alliance/backpatch-spring-security/commit/e9a73cc
+    basis: adapted
+    artifacts:
+      - org.springframework.security:spring-security-cas
+      - org.springframework.security:spring-security-config
+      - org.springframework.security:spring-security-core
+      - org.springframework.security:spring-security-crypto
+      - org.springframework.security:spring-security-ldap
+      - org.springframework.security:spring-security-oauth2-client
+      - org.springframework.security:spring-security-taglibs
+      - org.springframework.security:spring-security-web
+    note: New in this release; ported onto 5.3.13.RELEASE; fixed at 5.3.13.RELEASE-backpatch-00004 (backpatch-spring-security@e9a73cc).
 tests:
-  commit: 4a31f91bf919eaa1d7a629c3353fe25cb7ca301f
-  command: ./gradlew --no-daemon -I springsec-5.3-init.gradle -PexcludeProjects=samples/**,docs/** :spring-security-web:test :spring-security-crypto:test :spring-security-oauth2-client:test --continue (Gradle 6.2.2; the report decides)
+  commit: e9a73cc3fd3a473baec2bbc88f9b8768cfb3530e
+  command: ./gradlew --no-daemon -I springsec-5.3-init.gradle -PexcludeProjects=samples/**,docs/** :spring-security-cas:test :spring-security-config:test :spring-security-core:test :spring-security-crypto:test :spring-security-ldap:test :spring-security-oauth2-client:test :spring-security-taglibs:test :spring-security-web:test --continue (Gradle 6.2.2; the report decides)
   runtime: OpenJDK 1.8.0_382 (Zulu), Gradle wrapper of the repository
-  report: spring-security-oauth2-client-5.3.13.RELEASE-backpatch-00003-tests.zip
-  report_sha256: 662d4d3a94d20f615b477c067ee266141dae259da2b7261b4e5319d68c0662b0
+  report: spring-security-cas-5.3.13.RELEASE-backpatch-00004-tests.zip
+  report_sha256: a0b849064b47a8c121a17bcb646f3ede2fd73dd4ec56516d6f39bba5b933e75b
   result: pass
-  note: 2894 tests at the patch commit, 1 of them skipped by the suite, 0 failed, 0 errors.
+  note: 5645 tests at the patch commit, 1 of them skipped by the suite, 0 failed, 0 errors.
