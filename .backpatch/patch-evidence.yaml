@@ -1,0 +1,21 @@
+schema: osera-patch-evidence/0.1.0
+producer: moderne
+release: 5.8.16.1-backpatch-00001
+baseline: v5.8.16+backpatch.baseline
+fixes:
+  - cve: CVE-2026-22732
+    upstream_fix_url: https://github.com/spring-projects/spring-security/commit/1dae9aa459436e0bb1a95701ed0d31e12be7788a
+    advisory_url: https://nvd.nist.gov/vuln/detail/CVE-2026-22732
+    patch_commit_url: https://github.com/moderne-backpatch-alliance/backpatch-spring-security/compare/666d38d~1...0d0678e
+    basis: adapted
+    artifacts:
+      - org.springframework.security:spring-security-web
+    note: New in this release; ported onto 5.8.16; fixed at 5.8.16.1-backpatch-00001 (backpatch-spring-security@666d38d..0d0678e).
+tests:
+  commit: 0d0678e64314e3c8fa6145bbfc465068db53cb0a
+  command: ./gradlew --no-daemon --offline --no-scan :spring-security-config:test :spring-security-core:test :spring-security-web:test --continue -Dspring.security.timing-tests=true for the test JVMs (the tag's Gradle 7.5.1 wrapper on Zulu 11, Central through Moderne's cache; the report decides)
+  runtime: OpenJDK 11.0.20 (Zulu), javac 8 toolchain, Gradle wrapper of the repository
+  report: spring-security-web-5.8.16.1-backpatch-00001-tests.zip
+  report_sha256: 83af693251e2a715c47e9e4699a0261ea4731f458989b0e857f8b9a8dae14abf
+  result: pass
+  note: 5713 tests at the patch commit, 1 of them skipped by the suite, 0 failed, 0 errors.
